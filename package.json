@@ -1,28 +1,50 @@
 {
   "name": "open-design-repair",
   "version": "1.0.0",
-  "description": "Cross-platform maintenance tool for Open Design desktop app",
+  "description": "Cross-platform maintenance and repair tool for Open Design desktop app. Fixes deleted projects reappearing, stuck runs, orphaned data, and cache issues. Supports Windows, macOS, and Linux.",
   "main": "od-repair.mjs",
   "bin": {
     "od-repair": "./od-repair.mjs"
   },
   "type": "module",
   "scripts": {
-    "test": "node --experimental-sqlite od-repair.mjs version"
+    "test": "node --experimental-sqlite od-repair.mjs version",
+    "doctor": "node --experimental-sqlite od-repair.mjs doctor",
+    "fix": "node --experimental-sqlite od-repair.mjs fix"
   },
   "keywords": [
     "open-design",
+    "opendesign",
     "repair",
     "maintenance",
     "database",
     "sqlite",
-    "electron"
+    "electron",
+    "cli",
+    "troubleshooting",
+    "data-recovery",
+    "cache-cleaner",
+    "factory-reset",
+    "open design repair",
+    "open design fix",
+    "open design auto fix",
+    "open design error fix",
+    "open design troubleshoot",
+    "open design optimizer"
   ],
-  "author": "Open Design Repair contributors",
+  "author": "DKH Project <denniskumara123@gmail.com>",
   "license": "MIT",
   "engines": {
     "node": ">=22.0.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dkhproject/open-design-repair.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dkhproject/open-design-repair/issues"
+  },
+  "homepage": "https://github.com/dkhproject/open-design-repair#readme",
   "files": [
     "od-repair.mjs",
     "OpenDesignRepair.ps1",

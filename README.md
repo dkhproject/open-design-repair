@@ -1,8 +1,16 @@
 # Open Design Repair
 
-A cross-platform maintenance tool for the **[Open Design](https://github.com/nexu-io/open-design)** desktop app. Diagnoses and fixes common problems — projects or sessions that won't delete, deleted items reappearing, stuck runs, orphaned/corrupted data — and can reset the app to a factory-fresh state.
+[![npm version](https://img.shields.io/npm/v/open-design-repair?color=blue&label=npm)](https://www.npmjs.com/package/open-design-repair)
+[![npm downloads](https://img.shields.io/npm/dm/open-design-repair?label=downloads)](https://www.npmjs.com/package/open-design-repair)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D22-green)](https://nodejs.org/)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)](#requirements)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![CI](https://github.com/dkhproject/open-design-repair/workflows/CI/badge.svg)](https://github.com/dkhproject/open-design-repair/actions)
 
-> **Unofficial community tool.** Not affiliated with or endorsed by the Open Design authors. It only touches app *data* (database, caches, local state), never the app binaries. Use at your own risk; automatic backups are taken before any destructive action.
+> **Cross-platform maintenance & repair tool for the [Open Design](https://github.com/nexu-io/open-design) desktop app.**
+> Fixes deleted projects reappearing, stuck runs, orphaned data, cache bloat — and resets to factory-fresh state.
+
+**Unofficial community tool.** Not affiliated with or endorsed by the Open Design authors. It only touches app *data* (database, caches, local state), never the app binaries. Use at your own risk; automatic backups are taken before any destructive action.
 
 ---
 
@@ -12,6 +20,28 @@ A cross-platform maintenance tool for the **[Open Design](https://github.com/nex
 - **A project is stuck or half-deleted.** If a project's folder was removed outside the app (e.g. by an agent run), its database row becomes an orphan. `doctor` flags it; `fix` prunes it.
 - **You want a clean slate.** `factory-reset` wipes all app data so the next launch behaves like a first run — useful before reinstalling or handing off a machine.
 - **Leftover data after uninstall.** `backup`, `restore`, `list-backups` and `factory-reset` work even when the app itself is no longer installed.
+
+---
+
+## Common Issues This Tool Fixes
+
+These are the most frequently reported problems in the Open Design community:
+
+| Issue | Symptoms | Root Cause |
+|-------|----------|------------|
+| **"Delete does nothing" / deleted items reappear** | Project or session seems to stay after clicking Delete | Renderer cache (HTTP cache, LocalStorage, IndexedDB) holds stale "ghost" references. Database delete succeeds, but UI restores from cache. |
+| **Orphan projects** | Project appears in sidebar but folder is missing on disk | Agent or external tool deleted project folder on disk, but database row remains. |
+| **Stuck runs** | Run shows "running" status indefinitely | Process crashed mid-run; status never updated to failed/completed. |
+| **Session auto-recreates after delete** | Deleting the last session in a project creates a new empty one | **By design**: Open Design UI requires at least one conversation per project. Deleting the last one triggers immediate replacement. |
+| **Cache corruption after update/crash** | UI shows stale data, missing projects, or glitches | Renderer caches (Cache, GPUCache, LocalStorage, etc.) become inconsistent after app update or crash. |
+
+This tool addresses all of the above:
+
+- `doctor` → Diagnoses all issues above (read-only, safe)
+- `fix` → Clears renderer caches, prunes orphaned DB rows, vacuums database, removes stale runs
+- `clear-ui-state` → Targeted cache/LocalStorage clearing for "delete does nothing"
+- `delete-session` → Permanently removes a session without auto-recreate
+- `factory-reset` → Complete wipe for clean slate
 
 ---
 
@@ -143,7 +173,7 @@ od-repair restore --backup-path "C:\Users\me\AppData\Roaming\Open Design\od-repa
 
 ## How it works
 
-- **Discovery:** auto-detects the install (`%LOCALAPPDATA%\Programs\Open Design`, `Program Files`, or registry on Windows; `/Applications` on macOS; `/opt` on Linux) and the data root (`%APPDATA%\Open Design\namespaces\*` on Windows; `~/Library/Application Support/Open Design/namespaces` on macOS; `~/.config/Open Design/namespaces` on Linux). Override with `--app-path` / `--namespace`.
+- **Discovery:** auto-detects the install (`%LOCALAPPDATA%\Programs\Open Design`, `Program Files`, or registry on Windows; `/Applications` on macOS; `/opt` on Linux) and the data root (`%APPDATA%\Open Design\namespaces\*` on Windows; `~/Library/Application Support/Open Design\namespaces` on macOS; `~/.config/Open Design\namespaces` on Linux). Override with `--app-path` / `--namespace`.
 - **Database access:** `lib/od-data.mjs` runs inside the app's Electron binary on Windows (using bundled `better-sqlite3`), or under system Node with `better-sqlite3` on macOS/Linux. It checks tables/columns before querying, so it degrades gracefully across app versions.
 - **Ghost detection:** scans renderer state directories (Cache, Local/Session Storage, IndexedDB, …) for project UUIDs that no longer exist in the database.
 - **Repair:** prunes orphan rows/folders/runs/blobs, clears stale renderer state, and `VACUUM`s the database.

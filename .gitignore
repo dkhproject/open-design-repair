@@ -1,0 +1,13 @@
+# Local backups / scratch (never commit user data)
+od-repair-backups/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.log
+
+# OS / editor cruft
+Thumbs.db
+Desktop.ini
+.DS_Store
+.vscode/
+.idea/

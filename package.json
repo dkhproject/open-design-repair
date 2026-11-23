@@ -1,0 +1,35 @@
+{
+  "name": "open-design-repair",
+  "version": "1.0.0",
+  "description": "Cross-platform maintenance tool for Open Design desktop app",
+  "main": "od-repair.mjs",
+  "bin": {
+    "od-repair": "./od-repair.mjs"
+  },
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-sqlite od-repair.mjs version"
+  },
+  "keywords": [
+    "open-design",
+    "repair",
+    "maintenance",
+    "database",
+    "sqlite",
+    "electron"
+  ],
+  "author": "Open Design Repair contributors",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "files": [
+    "od-repair.mjs",
+    "OpenDesignRepair.ps1",
+    "OpenDesignRepair.cmd",
+    "lib/od-data.mjs",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ]
+}
